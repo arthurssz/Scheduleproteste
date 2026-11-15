@@ -1,0 +1,30 @@
+name: Gerar APK de teste
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Obter codigo
+        uses: actions/checkout@v6
+
+      - name: Compilar APK com Flet
+        id: build
+        uses: flet-dev/flet-build-action@v1
+        with:
+          target: apk
+          runner-python-version: "3.14"
+          bundled-python-version: "3.14"
+          build-number: ${{ github.run_number }}
+
+      - name: Disponibilizar APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: schedulepro-apk
+          path: ${{ steps.build.outputs.archive-path }}
+          archive: false
+          if-no-files-found: error
